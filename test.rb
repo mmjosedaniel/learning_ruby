@@ -1,45 +1,56 @@
 # frozen_string_literal: true
 
-scores = [295, 294, 291, 287, 287, 285, 285, 284, 283, 279,
-          277, 274, 274, 271, 270, 268, 268, 268, 264, 260, 259, 258, 257,
-          255, 252, 250, 244, 241, 240, 237, 236, 236, 231, 227, 227, 227,
-          226, 225, 224, 223, 216, 212, 200, 197, 196, 194, 193, 189, 188,
-          187, 183, 182, 178, 177, 173, 171, 169, 165, 143, 140, 137, 135,
-          133, 130, 130, 130, 128, 127, 122, 120, 116, 114, 113, 109, 106,
-          103, 99, 92, 85, 81, 69, 68, 63, 63, 63, 61, 57, 51, 47, 46, 38, 30,
-          28, 25, 22, 15, 14, 12, 6, 4,]
-alice = [5, 5, 6, 14, 19, 20, 23, 25, 29, 29, 30, 30, 32, 37, 38, 38, 38, 41, 41, 44, 45,45, 47, 59,
-          59, 62, 63, 65, 67, 69, 70, 72, 72, 76, 79, 82, 83, 90, 91, 92, 93, 98, 98, 100, 100, 102,
-          128, 131, 131, 133, 134, 139, 140, 141, 143, 144, 144, 144, 144, 147, 150, 152, 155,
-          156, 160, 164, 164, 165, 165, 166, 168, 169, 170, 171, 172, 173, 174, 174, 180, 184,
-          103, 105, 106, 107, 109, 112, 115, 118, 118, 121, 122, 122, 123, 125, 125, 125, 127,
-          187, 187, 188, 194, 197, 197, 197, 198, 201, 202, 202, 207, 208, 211, 212, 212, 214,
-          217, 219, 219, 220, 220, 223, 225, 227, 228, 229, 229, 233, 235, 235, 236, 242, 242,
-          245, 246, 252, 253, 253, 257, 257, 260, 261, 266, 266, 268, 269, 271, 271, 275, 276,
-          281, 282, 283, 284, 285, 287, 289, 289, 295, 296, 298, 300, 300, 301, 304, 306, 308,
-          309, 310, 316, 318, 318, 324, 326, 329, 329, 329, 330, 330, 332, 337, 337, 341, 341,
-          349, 351, 351, 354, 356, 357, 366, 369, 377, 379, 380, 382, 391, 391, 394, 396, 396, 400]
+n = 5
+k = 3
+r_q = 4
+c_q = 3
+# obstacles = [[5, 5], [4, 2], [2, 3]]
+obstacles = [[5, 3], [2, 3], [1, 3], [3, 3]]
 
-def climbingLeaderboard(scores, alice)
-  scores.uniq!
-  arr = []
-  i = scores.length
-
-  alice.each do |ali|
-    while i.positive?
-
-      i -= 1
-      break if ali <= scores[i]
-    end
-
-    if ali < scores[i]
-      arr.push(i + 2)
-    else
-      arr.push(i + 1)
-    end
-    i += 1
-  end
-  p arr
+def queensAttack(n, _k, r_q, c_q, obstacles)
+  compare_distances(n, r_q, c_q, obstacles)
 end
 
-climbingLeaderboard(scores, alice)
+def start_distances(n, r_q, c_q)
+  distances = {}
+
+  distances.store('up', n - r_q) # *up
+  distances.store('right', n - c_q) # *right
+  distances.store('down', r_q - 1) # *down
+  distances.store('left', c_q - 1) # *left
+
+  distances.store('up_r', [n - r_q, n - c_q].min) # *up_r
+  distances.store('down_r', [r_q - 1, n - c_q].min) # *down_r
+  distances.store('down_l', [r_q - 1, c_q - 1].min) # *down_l
+  distances.store('up_l', [n - r_q, c_q - 1].min) # *up_l
+
+  distances
+end
+
+def compare_distances(n, r_q, c_q, obstacles)
+  distances = start_distances(n, r_q, c_q)
+  obstacles.each do |v|
+    if v[1] == c_q && v[0] > r_q
+      distances['up'] = (v[0] - r_q) - 1 if (v[0] - r_q - 1) < distances['up']
+    elsif v[1] == c_q && v[0] < r_q
+      distances['down'] = (r_q - v[0] - 1) if
+      (r_q - v[0] - 1) < distances['down']
+    end
+  end
+  p distances
+end
+
+queensAttack(n, k, r_q, c_q, obstacles)
+
+# * Shows the position of the last possible obstacle
+# def last_obstacles(n, r_q, c_q, obstacles)
+#   obstacles.push([n, c_q]) # *up
+#   obstacles.push([r_q, n]) # *right
+#   obstacles.push([1, c_q]) # *down
+#   obstacles.push([r_q, 1]) # *left
+#
+#   obstacles.push([[n + r_q - c_q, n].min, [n + c_q - r_q, n].min]) # *up_r
+#   obstacles.push([[r_q + c_q - n, 1].max, [r_q + c_q - 1, n].min]) # *down_r
+#   obstacles.push([[r_q - c_q + 1, 1].max, [c_q - r_q + 1, 1].max]) # *down_l
+#   obstacles.push([[r_q + c_q - 1, n].min, [c_q + r_q - n, 1].max]) # *up_l
+# end
