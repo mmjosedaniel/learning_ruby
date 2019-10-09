@@ -11,7 +11,7 @@ class Vertex
     @flow = flow
     @temp = 0
   end
-end
+  end
 
 class Graph
   attr_accessor :vertices
@@ -46,34 +46,33 @@ class Graph
 
   def let_the_water_flow(container = vertices[0])
     container.neighbors.each_with_index do |val, i|
-      if val == true
-        vertices[i].lv += vertices[i].temp
-        vertices[i].temp = 0
+      next unless val == true
 
-        vertices[i].flow.times do
-          break if container.lv <= 0 ||
-                   vertices[i].lv + vertices[i].temp >= vertices[i].capacity
+      vertices[i].lv += vertices[i].temp
+      vertices[i].temp = 0
 
-          container.lv -= 1
-          vertices[i].temp += 1
-        end
+      vertices[i].flow.times do
+        break if container.lv <= 0 ||
+                 vertices[i].lv + vertices[i].temp >= vertices[i].capacity
 
-        let_the_water_flow(vertices[i])
+        container.lv -= 1
+        vertices[i].temp += 1
       end
+
+      let_the_water_flow(vertices[i])
     end
   end
 
   private
 
-  def humanice_response()
+  def humanice_response
     str = ''
     vertices.each do |val|
-      litre = ''
-      if val.lv + val.temp == 1
-        litre = 'litre'
-      else
-        litre = 'litres'
-      end
+      litre = if val.lv + val.temp == 1
+                'litre'
+              else
+                'litres'
+              end
       str += "The container #{val.name} has #{val.lv + val.temp} #{litre} of liquid \n"
     end
     str
